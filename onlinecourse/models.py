@@ -67,6 +67,37 @@ class Course(models.Model):
         return "Name: " + self.name + "," + \
                "Description: " + self.description
 
+# Question
+class Question(models.Model):
+    content = models.CharField(null=False, max_length=30, default='1+1?')
+    courses = models.ManyToManyField(Course)
+    grade = models.IntegerField(default=0)
+
+    def printQuestion(self):
+        return "Question is" + self.content
+    
+    def is_get_score(self, selected_ids):
+       all_answers = self.choice_set.filter(is_correct=True).count()
+       selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
+       if all_answers == selected_correct:
+           return True
+       else:
+           return False
+
+# Choice
+class Choice(models.Model):
+    content = models.CharField(null=False, max_length=30, default='2')
+    validity = models.CharField(null=False, max_length=30, default='Valid')
+    question = models.ManyToManyField(Question)
+
+    def printChoice(self):
+        return "Question is" + self.content
+
+# Submission  
+class Submission(models.Model):
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
+    chocies = models.ManyToManyField(Choice)
+
 
 # Lesson model
 class Lesson(models.Model):
